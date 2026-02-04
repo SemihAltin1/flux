@@ -6,6 +6,7 @@ import 'package:flux/features/auth/domain/use_cases/sign_out.dart';
 import 'package:flux/features/notes/domain/use_cases/delete_all_notes_from_local.dart';
 import 'package:flux/features/settings/data/models/update_password_request.dart';
 import 'package:flux/features/settings/data/models/update_profile_request.dart';
+import 'package:flux/features/settings/domain/use_cases/delete_account.dart';
 import 'package:flux/features/settings/domain/use_cases/update_password.dart';
 import 'package:flux/features/settings/domain/use_cases/update_profile.dart';
 import 'package:flux/features/settings/presentation/cubit/settings_state.dart';
@@ -62,7 +63,14 @@ final class SettingsCubit extends Cubit<SettingsState> {
   }
 
   Future<void> deleteAccount() async {
-
+    emit(SettingsLoading());
+    final result = await serviceLocator<DeleteAccountUseCase>().execute();
+    if(result is DataSuccess) {
+      SharedPreferences shared = await SharedPreferences.getInstance();
+      shared.remove("token");
+      await serviceLocator<DeleteAllNotesFromLocalUseCase>().execute();
+      emit(SignedOut());
+    }
   }
 
   Future<void> getProfile() async {

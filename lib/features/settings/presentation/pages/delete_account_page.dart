@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flux/common/widgets/action_button.dart';
 import 'package:flux/common/widgets/custom_dialogs.dart';
 import 'package:flux/common/widgets/default_app_bar.dart';
+import 'package:flux/features/settings/presentation/cubit/settings_cubit.dart';
 
 final class DeleteAccountPage extends StatelessWidget {
   const DeleteAccountPage({super.key});
@@ -47,7 +49,7 @@ final class DeleteAccountPage extends StatelessWidget {
       "Delete Account",
       "Are you sure you want to delete your account?",
       "Delete",
-        () => null,
+        () => context.read<SettingsCubit>().deleteAccount(),
     );
   }
   
