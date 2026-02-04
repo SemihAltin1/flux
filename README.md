@@ -1,16 +1,44 @@
-# flux
+# FLUX - AI Note-Taking App
 
-Flux
+A high-performance, offline-first note-taking application built with Flutter and a custom FastAPI backend. This project demonstrates Clean Architecture principles and robust state management using Bloc/Cubit.
 
-## Getting Started
+## ✨ Key Features
+- Offline-First & Sync: Seamlessly create and edit notes offline; data automatically syncs with the custom backend when a connection is restored.
 
-This project is a starting point for a Flutter application.
+- AI Integration: Built-in AI features to summarize notes and fix grammar/style.
 
-A few resources to get you started if this is your first Flutter project:
+- Smart Search: Efficient filtering of notes by title or content across both local cache and remote data.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- UX Focused: Includes "Pinned" notes, "Undo Delete" functionality via SnackBar, and intuitive loading/error states.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Secure Auth: Full authentication flow including Sign Up, Login, and Logout.
+
+
+## 🛠 Tech Stack
+- Frontend: Flutter (Bloc/Cubit, SQFlite, Dio, GetIt).
+
+- Backend: Laravel (PHP) - A custom REST API for handling note persistence and synchronization.
+
+- Architecture: Clean Architecture (Data, Domain, and Presentation layers).
+
+
+## 📂 Project Structure
+- The project follows a Feature-Driven Clean Architecture:
+
+- core/: Database services and global constants.
+
+- features/: Modular features (Auth, Notes, Settings) containing their own Data, Domain, and Presentation layers.
+
+## 🚀 Getting Started
+- Clone the repo: git clone https://semihaltin.com
+
+- Install dependencies: flutter pub get
+
+- Environment Variables: Copy .env.example to .env and fill in your API keys.
+
+- Run the app: flutter run
+
+## 📺 Demo & APK
+- Performance Demo: https://semihaltin.com
+
+- Download APK: https://semihaltin.com
