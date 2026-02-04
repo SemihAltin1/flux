@@ -1,6 +1,6 @@
 final class AppIcons {
 
-  static final String path = "assets/icons";
+  static final String path = "assets/icon";
 
   static final String add = "$path/add.png";
   static final String ai = "$path/ai.png";

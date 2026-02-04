@@ -28,7 +28,16 @@ dependencies:
   google_generative_ai: ^0.4.7
   connectivity_plus: ^7.0.0
 
+flutter_icons:
+  image_path: "assets/icon/icon.png"
+  android: true
+  ios: false
+  background_color: "#195de6"
+  adaptive_icon_background: "#195de6"
+  adaptive_icon_foreground: "assets/icon/icon.png"
+
 dev_dependencies:
+  flutter_launcher_icons: ^0.14.4
   flutter_test:
     sdk: flutter
 
@@ -39,5 +48,5 @@ flutter:
 
   assets:
     - assets/
-    - assets/icons/
-    - assets/images/
+    - assets/icon/
+    - assets/image/
