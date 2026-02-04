@@ -12,7 +12,7 @@ final class SettingsServiceImpl implements SettingsService {
   Future<Response> deleteAccount() async {
     final header = await DioHelper.getHeader();
     final res = await _dio.delete(
-      "/api/profile/deleteAccount",
+      "/api/delete-account",
       options: Options(headers: header)
     );
     return res;

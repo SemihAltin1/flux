@@ -7,6 +7,7 @@ import 'package:flux/config/assets/app_icons.dart';
 import 'package:flux/config/theme/app_colors.dart';
 import 'package:flux/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:flux/features/settings/presentation/cubit/settings_state.dart';
+import 'package:flux/features/settings/presentation/pages/delete_account_page.dart';
 import 'package:flux/features/settings/presentation/pages/privacy_policy_page.dart';
 import 'package:flux/features/settings/presentation/pages/update_password_page.dart';
 import 'package:flux/features/settings/presentation/pages/update_profile_page.dart';
@@ -51,7 +52,7 @@ final class SettingsPage extends StatelessWidget {
         children: [
           _menuItem(context, "Update Profile", AppIcons.user, UpdateProfilePage()),
           _menuItem(context, "Update Password", AppIcons.lock, UpdatePasswordPage()),
-          _menuItem(context, "Delete Account", AppIcons.trash, const SizedBox()),
+          _menuItem(context, "Delete Account", AppIcons.trash, const DeleteAccountPage()),
           _menuItem(context, "Privacy Policy", AppIcons.shield, const PrivacyPolicyPage()),
           _logoutButton(context),
         ],

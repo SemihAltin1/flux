@@ -11,9 +11,16 @@ final class SettingsRepositoryImpl extends SettingsRepository {
   final _service = serviceLocator<SettingsService>();
   
   @override
-  Future<DataState<bool>> deleteAccount() {
-    // TODO: implement deleteAccount
-    throw UnimplementedError();
+  Future<DataState<bool>> deleteAccount() async {
+    try {
+      await _service.deleteAccount();
+      return const DataSuccess(true);
+    } on DioException catch(e) {
+      final message = e.response?.data["message"] ?? "Account couldn't be deleted";
+      return DataFailed(message);
+    } catch(_) {
+      return const DataFailed("Account couldn't be deleted");
+    }
   }
 
   @override
