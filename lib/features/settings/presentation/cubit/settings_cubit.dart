@@ -2,7 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flux/core/resources/data_state.dart';
 import 'package:flux/features/auth/domain/use_cases/get_current_user.dart';
 import 'package:flux/features/auth/domain/use_cases/sign_out.dart';
-import 'package:flux/features/notes/domain/use_cases/delete_all_notes.dart';
+import 'package:flux/features/notes/domain/use_cases/delete_all_notes_from_local.dart';
 import 'package:flux/features/settings/data/models/update_password_request.dart';
 import 'package:flux/features/settings/data/models/update_profile_request.dart';
 import 'package:flux/features/settings/domain/use_cases/update_password.dart';
@@ -75,7 +75,7 @@ final class SettingsCubit extends Cubit<SettingsState> {
     if(result is DataSuccess) {
       SharedPreferences shared = await SharedPreferences.getInstance();
       shared.remove("token");
-      await serviceLocator<DeleteAllNotesUseCase>().execute();
+      await serviceLocator<DeleteAllNotesFromLocalUseCase>().execute();
       emit(SignedOut());
     }
   }

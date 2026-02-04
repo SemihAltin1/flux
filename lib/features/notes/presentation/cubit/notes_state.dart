@@ -7,9 +7,9 @@ final class NotesLoading extends NotesState {}
 
 final class NotesLoaded extends NotesState {
   final List<NoteModel> notes;
-  final int selectedCategoryId;
+  final String selectedCategoryId;
 
-  NotesLoaded(this.notes, {this.selectedCategoryId = 0});
+  NotesLoaded(this.notes, {this.selectedCategoryId = "0"});
 }
 
 final class NotesError extends NotesState {

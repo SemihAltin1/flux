@@ -4,7 +4,6 @@ import 'package:flux/common/widgets/action_button.dart';
 import 'package:flux/common/widgets/default_app_bar.dart';
 import '../../../../common/widgets/default_input.dart';
 import '../../../../common/widgets/loading_animation.dart';
-import '../../../notes/data/repository/notes_repository_impl.dart';
 import '../../../notes/presentation/cubit/notes_cubit.dart';
 import '../../../notes/presentation/pages/notes_page.dart';
 import '../../data/models/register_request.dart';
@@ -111,7 +110,7 @@ final class RegisterPage extends StatelessWidget {
       context,
       MaterialPageRoute(
         builder: (context) => BlocProvider(
-          create: (context) => NotesCubit(NotesRepositoryImpl())..fetchNotesFromLocal(),
+          create: (context) => NotesCubit()..fetchNotesFromLocal(),
           child: const NotesPage(),
         ),
       ),

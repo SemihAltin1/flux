@@ -28,16 +28,16 @@ final class DatabaseService {
     await db.execute('''
     CREATE TABLE notes (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      remoteId TEXT,
+      remote_id INTEGER,
       title TEXT NOT NULL,
       content TEXT NOT NULL,
-      categoryName TEXT,
-      categoryId INTEGER,
-      isPinned INTEGER NOT NULL,
-      isSynced INTEGER NOT NULL,
-      isDeletedLocally INTEGER NOT NULL,
-      createdAt TEXT NOT NULL,
-      updatedAt TEXT NOT NULL
+      category_name TEXT,
+      category_id TEXT,
+      is_pinned INTEGER NOT NULL,
+      is_synced INTEGER NOT NULL,
+      is_deleted_locally INTEGER NOT NULL,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
     )
     ''');
   }

@@ -1,80 +1,117 @@
 import 'package:flux/core/resources/data_state.dart';
 import 'package:flux/features/notes/data/services/notes_local_service.dart';
+import 'package:sqflite/sqflite.dart';
 import '../../../../core/database/db_service.dart';
+import '../models/get_notes_request.dart';
 import '../models/note_model.dart';
 
 final class NotesLocalServiceImpl implements NotesLocalService {
   final DatabaseService _dbService = DatabaseService.instance;
 
   @override
-  Future<DataState<bool>> deleteNote(int id) async {
+  Future<DataState<List<NoteModel>>> getNotes(GetNotesRequest request) async {
     try {
       final db = await _dbService.database;
-      await db.delete('notes', where: 'id = ?', whereArgs: [id]);
-      return const DataSuccess(true);
-    } catch(_) {
-      return const DataFailed("Notes couldn't be deleted. Please try again later");
-    }
-  }
-
-  @override
-  Future<DataState<List<NoteModel>>> getNotes({String? search, int? categoryId}) async {
-    try {
-      final db = await _dbService.database;
-
-      List<String> whereClauses = [];
+      List<String> whereClauses = ['is_deleted_locally = 0'];
       List<dynamic> whereArgs = [];
 
-      if (search != null && search.isNotEmpty) {
+      if (request.search != null && request.search!.isNotEmpty) {
         whereClauses.add('(title LIKE ? OR content LIKE ?)');
-        whereArgs.addAll(['%$search%', '%$search%']);
+        whereArgs.addAll(['%${request.search}%', '%${request.search}%']);
       }
 
-      if (categoryId != null && categoryId != 0) {
-        whereClauses.add('categoryId = ?');
-        whereArgs.add(categoryId);
+      if (request.categoryId != null && request.categoryId != "0") {
+        whereClauses.add('category_id = ?');
+        whereArgs.add(request.categoryId);
       }
-
-      String? finalWhere = whereClauses.isEmpty ? null : whereClauses.join(' AND ');
 
       final result = await db.query(
         'notes',
-        where: finalWhere,
-        whereArgs: whereArgs.isEmpty ? null : whereArgs,
-        orderBy: 'isPinned DESC, createdAt DESC',
+        where: whereClauses.join(' AND '),
+        whereArgs: whereArgs,
+        orderBy: 'is_pinned DESC, created_at DESC',
       );
 
-      final decodedData = result.map((e) => NoteModel.fromMap(e)).toList();
-      return DataSuccess(decodedData);
+      return DataSuccess(result.map((e) => NoteModel.fromLocalJson(e)).toList());
     } catch (_) {
-      return const DataFailed("Notes couldn't be loaded. Please try again later");
+      return const DataFailed("Notes couldn't be loaded.");
     }
   }
 
   @override
-  Future<DataState<bool>> insertNote(NoteModel note) async {
+  Future<DataState<List<NoteModel>>> getUnsyncedNotes() async {
     try {
       final db = await _dbService.database;
-      await db.insert('notes', note.toMap());
-      return const DataSuccess(true);
-    } catch(_) {
-      return const DataFailed("The note couldn't be saved. Please try again later.");
-    }
-  }
-
-  @override
-  Future<DataState<bool>> updateNote(NoteModel note) async {
-    try {
-      final db = await _dbService.database;
-      await db.update(
+      final result = await db.query(
         'notes',
-        note.toMap(),
-        where: 'id = ?',
-        whereArgs: [note.id],
+        where: 'is_synced != ? AND is_deleted_locally = ?',
+        whereArgs: [0, 0],
       );
+
+      return DataSuccess(result.map((e) => NoteModel.fromLocalJson(e)).toList());
+    } catch (e) {
+      return const DataFailed("Error fetching unsynced notes");
+    }
+  }
+
+  @override
+  Future<DataState<List<NoteModel>>> getDeletedNotes() async {
+    try {
+      final db = await _dbService.database;
+      final result = await db.query('notes', where: 'is_deleted_locally = ?', whereArgs: [1]);
+      return DataSuccess(result.map((e) => NoteModel.fromLocalJson(e)).toList());
+    } catch (_) {
+      return const DataFailed("Error fetching deleted notes");
+    }
+  }
+
+  @override
+  Future<DataState<bool>> insertNotes(List<NoteModel> notes) async {
+    try {
+      final db = await _dbService.database;
+      final batch = db.batch();
+      for (var note in notes) {
+        batch.insert('notes', note.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+      }
+      await batch.commit(noResult: true);
       return const DataSuccess(true);
-    } catch(_) {
-      return const DataFailed("The note couldn't be updated. Please try again later.");
+    } catch (_) {
+      return const DataFailed("Multiple notes could not be saved.");
+    }
+  }
+
+  @override
+  Future<DataState<bool>> updateNotes(List<NoteModel> notes) async {
+    try {
+      final db = await _dbService.database;
+      final batch = db.batch();
+      for (var note in notes) {
+        batch.update('notes', note.toMap(), where: 'id = ?', whereArgs: [note.id]);
+      }
+      await batch.commit(noResult: true);
+      return const DataSuccess(true);
+    } catch (_) {
+      return const DataFailed("Multiple notes couldn't be updated.");
+    }
+  }
+
+  @override
+  Future<DataState<bool>> deleteNotes(List<int> ids) async {
+    try {
+      final db = await _dbService.database;
+      final batch = db.batch();
+      for (var id in ids) {
+        batch.update(
+          'notes',
+          {'is_deleted_locally': 1, 'is_synced': 0},
+          where: 'id = ?',
+          whereArgs: [id],
+        );
+      }
+      await batch.commit(noResult: true);
+      return const DataSuccess(true);
+    } catch (_) {
+      return const DataFailed("Multiple notes could not be marked for deletion.");
     }
   }
 
@@ -84,9 +121,29 @@ final class NotesLocalServiceImpl implements NotesLocalService {
       final db = await _dbService.database;
       await db.delete('notes');
       return const DataSuccess(true);
-    } catch (e) {
+    } catch (_) {
       return const DataFailed("Local data could not be cleared.");
     }
   }
 
+  @override
+  Future<DataState<bool>> hardDeleteNotes(List<int> ids) async {
+    try {
+      final db = await _dbService.database;
+      final batch = db.batch();
+
+      for (var id in ids) {
+        batch.delete(
+          'notes',
+          where: 'id = ?',
+          whereArgs: [id],
+        );
+      }
+      await batch.commit(noResult: true);
+
+      return const DataSuccess(true);
+    } catch (e) {
+      return const DataFailed("Could not permanently remove notes from local storage.");
+    }
+  }
 }

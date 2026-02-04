@@ -78,7 +78,7 @@ final class NotesPage extends StatelessWidget {
 
     return BlocBuilder<NotesCubit, NotesState>(
       builder: (context, state) {
-        int selectedId = (state is NotesLoaded) ? state.selectedCategoryId : 0;
+        String selectedId = (state is NotesLoaded) ? state.selectedCategoryId : "0";
 
         return SizedBox(
           width: MediaQuery.of(context).size.width,
@@ -87,7 +87,7 @@ final class NotesPage extends StatelessWidget {
             scrollDirection: .horizontal,
             itemCount: CategoryModel.categories.length + 1,
             itemBuilder: (context, index) {
-              final int categoryId = index == 0 ? 0 : CategoryModel.categories[index - 1].id!;
+              final String categoryId = index == 0 ? "0" : CategoryModel.categories[index - 1].id!;
               final String name = index == 0 ? "All" : CategoryModel.categories[index - 1].name ?? "";
               final bool isSelected = selectedId == categoryId;
 
@@ -142,13 +142,13 @@ final class NotesPage extends StatelessWidget {
 
     String plainTextContent;
     try {
-      final json = jsonDecode(note.content);
+      final json = jsonDecode(note.content ?? "");
       plainTextContent = quill.Document.fromJson(json).toPlainText().trim();
     } catch (e) {
-      plainTextContent = note.content;
+      plainTextContent = note.content ?? "";
     }
 
-    final DateTime updatedAt = DateTime.parse(note.updatedAt);
+    final DateTime updatedAt = DateTime.parse(note.updatedAt ?? "");
     final String formattedDate = DateFormat.yMMMd().format(updatedAt);
 
     return GestureDetector(
@@ -311,7 +311,7 @@ final class NotesPage extends StatelessWidget {
                 title: Text(note.isPinned == 1 ? "Unpin Note" : "Pin Note"),
                 onTap: () {
                   final updatedNote = note.copyWith(isPinned: note.isPinned == 1 ? 0 : 1);
-                  context.read<NotesCubit>().updateNote(updatedNote);
+                  context.read<NotesCubit>().updateNoteToLocal(updatedNote);
                   Navigator.pop(bottomSheetContext);
                 },
               ),
@@ -384,7 +384,7 @@ final class NotesPage extends StatelessWidget {
                   trailing: isSelected ? const Icon(Icons.check, color: AppColors.primary) : null,
                   onTap: () {
                     final updatedNote = note.copyWith(categoryId: category.id);
-                    context.read<NotesCubit>().updateNote(updatedNote);
+                    context.read<NotesCubit>().updateNoteToLocal(updatedNote);
                     Navigator.pop(dialogContext);
                   },
                 );

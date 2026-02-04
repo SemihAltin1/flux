@@ -3,9 +3,9 @@ import 'package:flux/core/use_case/use_case.dart';
 import 'package:flux/features/notes/domain/repository/notes_repository.dart';
 import 'package:flux/service_locator.dart';
 
-final class DeleteAllNotesUseCase implements UseCase<DataState<bool>, void> {
+final class DeleteNotesFromRemoteUseCase implements UseCase<DataState<bool>, List<int>> {
   @override
-  Future<DataState<bool>> execute({void params}) {
-    return serviceLocator<NotesRepository>().deleteAllNotes();
+  Future<DataState<bool>> execute({List<int>? params}) {
+    return serviceLocator<NotesRepository>().deleteNotesFromRemote(params!);
   }
 }

@@ -13,7 +13,6 @@ import 'package:flux/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:flux/features/auth/presentation/cubit/auth_state.dart';
 import 'package:flux/features/auth/presentation/pages/forgot_password_page.dart';
 import 'package:flux/features/auth/presentation/pages/register_page.dart';
-import 'package:flux/features/notes/data/repository/notes_repository_impl.dart';
 import 'package:flux/features/notes/presentation/pages/notes_page.dart';
 import '../../../notes/presentation/cubit/notes_cubit.dart';
 
@@ -187,7 +186,7 @@ final class LoginPage extends StatelessWidget {
       context,
       MaterialPageRoute(
         builder: (context) => BlocProvider(
-          create: (context) => NotesCubit(NotesRepositoryImpl())..fetchNotesFromLocal(),
+          create: (context) => NotesCubit()..getNotesFromRemote(),
           child: const NotesPage(),
         ),
       ),

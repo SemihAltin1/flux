@@ -1,5 +1,5 @@
 final class CategoryModel {
-  final int? id;
+  final String? id;
   final String? name;
 
   const CategoryModel({
@@ -8,11 +8,11 @@ final class CategoryModel {
   });
 
   static List<CategoryModel> categories = const [
-    CategoryModel(id: 1, name: "Work"),
-    CategoryModel(id: 2, name: "Personal"),
-    CategoryModel(id: 3, name: "Ideas"),
-    CategoryModel(id: 4, name: "Shopping"),
-    CategoryModel(id: 5, name: "Education"),
+    CategoryModel(id: "1", name: "Work"),
+    CategoryModel(id: "2", name: "Personal"),
+    CategoryModel(id: "3", name: "Ideas"),
+    CategoryModel(id: "4", name: "Shopping"),
+    CategoryModel(id: "5", name: "Education"),
   ];
 
 }

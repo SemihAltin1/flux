@@ -7,7 +7,6 @@ import 'package:flux/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:flux/features/auth/presentation/pages/login_page.dart';
 import 'package:flux/features/splash/cubit/splash_controller.dart';
 import 'package:flux/features/splash/cubit/splash_state.dart';
-import '../../notes/data/repository/notes_repository_impl.dart';
 import '../../notes/presentation/cubit/notes_cubit.dart';
 import '../../notes/presentation/pages/notes_page.dart';
 
@@ -68,7 +67,7 @@ final class _SplashPageState extends State<SplashPage> with SplashDelegate {
       context,
       MaterialPageRoute(
         builder: (context) => BlocProvider(
-          create: (context) => NotesCubit(NotesRepositoryImpl())..fetchNotesFromLocal(),
+          create: (context) => NotesCubit()..fetchNotesFromLocal(),
           child: const NotesPage(),
         ),
       ),

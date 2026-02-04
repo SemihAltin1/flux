@@ -13,7 +13,18 @@ import 'package:flux/features/notes/data/services/notes_local_service_impl.dart'
 import 'package:flux/features/notes/data/services/notes_remote_service.dart';
 import 'package:flux/features/notes/data/services/notes_remote_service_impl.dart';
 import 'package:flux/features/notes/domain/repository/notes_repository.dart';
-import 'package:flux/features/notes/domain/use_cases/delete_all_notes.dart';
+import 'package:flux/features/notes/domain/use_cases/delete_all_notes_from_local.dart';
+import 'package:flux/features/notes/domain/use_cases/delete_notes_from_local.dart';
+import 'package:flux/features/notes/domain/use_cases/get_notes_from_local.dart';
+import 'package:flux/features/notes/domain/use_cases/delete_notes_from_remote.dart';
+import 'package:flux/features/notes/domain/use_cases/get_deleted_notes.dart';
+import 'package:flux/features/notes/domain/use_cases/get_notes_from_remote.dart';
+import 'package:flux/features/notes/domain/use_cases/get_unsynced_notes.dart';
+import 'package:flux/features/notes/domain/use_cases/hard_delete_notes_from_local.dart';
+import 'package:flux/features/notes/domain/use_cases/save_notes_to_local.dart';
+import 'package:flux/features/notes/domain/use_cases/save_notes_to_remote.dart';
+import 'package:flux/features/notes/domain/use_cases/update_notes_to_local.dart';
+import 'package:flux/features/notes/domain/use_cases/update_notes_to_remote.dart';
 import 'package:flux/features/settings/data/repository/settings_repository_impl.dart';
 import 'package:flux/features/settings/data/services/settings_service.dart';
 import 'package:flux/features/settings/data/services/settings_service_impl.dart';
@@ -52,5 +63,17 @@ Future<void> initializeDependencies() async {
   serviceLocator.registerSingleton<DeleteAccountUseCase>(DeleteAccountUseCase());
 
   /// Notes
-  serviceLocator.registerSingleton<DeleteAllNotesUseCase>(DeleteAllNotesUseCase());
+  serviceLocator.registerSingleton<GetNotesFromLocalUseCase>(GetNotesFromLocalUseCase());
+  serviceLocator.registerSingleton<SaveNotesToLocalUseCase>(SaveNotesToLocalUseCase());
+  serviceLocator.registerSingleton<UpdateNotesToLocalUseCase>(UpdateNotesToLocalUseCase());
+  serviceLocator.registerSingleton<DeleteNotesFromLocalUseCase>(DeleteNotesFromLocalUseCase());
+  serviceLocator.registerSingleton<DeleteAllNotesFromLocalUseCase>(DeleteAllNotesFromLocalUseCase());
+  serviceLocator.registerSingleton<GetDeletedNotesUseCase>(GetDeletedNotesUseCase());
+  serviceLocator.registerSingleton<GetUnsyncedNotesUseCase>(GetUnsyncedNotesUseCase());
+  serviceLocator.registerSingleton<HardDeleteNotesFromLocalUseCase>(HardDeleteNotesFromLocalUseCase());
+
+  serviceLocator.registerSingleton<DeleteNotesFromRemoteUseCase>(DeleteNotesFromRemoteUseCase());
+  serviceLocator.registerSingleton<GetNotesFromRemoteUseCase>(GetNotesFromRemoteUseCase());
+  serviceLocator.registerSingleton<SaveNotesToRemoteUseCase>(SaveNotesToRemoteUseCase());
+  serviceLocator.registerSingleton<UpdateNotesToRemoteUseCase>(UpdateNotesToRemoteUseCase());
 }

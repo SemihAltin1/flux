@@ -21,14 +21,14 @@ final class CreateNotePage extends StatefulWidget {
 
 final class _CreateNotePageState extends State<CreateNotePage> {
   late final QuillController _controller;
-  late int _selectedCategoryId;
+  late String _selectedCategoryId;
   late int _isPinned;
 
   @override
   void initState() {
     super.initState();
     _initializeController();
-    _selectedCategoryId = widget.noteModel?.categoryId ?? 0;
+    _selectedCategoryId = widget.noteModel?.categoryId ?? "0";
     _isPinned = widget.noteModel?.isPinned ?? 0;
   }
 
@@ -260,7 +260,7 @@ final class _CreateNotePageState extends State<CreateNotePage> {
                   ),
                   trailing: isSelected ? const Icon(Icons.check, color: AppColors.primary) : null,
                   onTap: () {
-                    _selectedCategoryId = category.id ?? 0;
+                    _selectedCategoryId = category.id ?? "0";
                     Navigator.pop(context);
                   },
                 );
@@ -331,8 +331,9 @@ final class _CreateNotePageState extends State<CreateNotePage> {
         updatedAt: now,
         isPinned: _isPinned,
         categoryId: _selectedCategoryId,
+        isSynced: 2,
       );
-      context.read<NotesCubit>().updateNote(updatedNote);
+      context.read<NotesCubit>().updateNoteToLocal(updatedNote);
     } else {
       final note = NoteModel(
         title: title.length > 30 ? "${title.substring(0, 30)}..." : title,
@@ -340,6 +341,7 @@ final class _CreateNotePageState extends State<CreateNotePage> {
         createdAt: now,
         updatedAt: now,
         categoryId: _selectedCategoryId,
+        isSynced: 1,
       );
       context.read<NotesCubit>().addNoteToLocal(note);
     }
@@ -348,7 +350,7 @@ final class _CreateNotePageState extends State<CreateNotePage> {
   void _initializeController() {
     if (widget.noteModel != null) {
       try {
-        final content = jsonDecode(widget.noteModel!.content);
+        final content = jsonDecode(widget.noteModel!.content ?? "");
         _controller = QuillController(
           document: Document.fromJson(content),
           selection: const TextSelection.collapsed(offset: 0),
