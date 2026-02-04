@@ -30,7 +30,7 @@ A high-performance, offline-first note-taking application built with Flutter and
 - features/: Modular features (Auth, Notes, Settings) containing their own Data, Domain, and Presentation layers.
 
 ## 🚀 Getting Started
-- Clone the repo: git clone https://semihaltin.com
+- Clone the repo: git clone https://github.com/SemihAltin1/flux.git
 
 - Install dependencies: flutter pub get
 
