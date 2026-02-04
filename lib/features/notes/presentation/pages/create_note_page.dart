@@ -325,6 +325,7 @@ final class _CreateNotePageState extends State<CreateNotePage> {
       if (widget.noteModel!.content == content && widget.noteModel!.categoryId == _selectedCategoryId && widget.noteModel!.isPinned == _isPinned) return;
       final updatedNote = NoteModel(
         id: widget.noteModel!.id,
+        remoteId: widget.noteModel!.remoteId,
         title: title.length > 30 ? "${title.substring(0, 30)}..." : title,
         content: content,
         createdAt: widget.noteModel!.createdAt,

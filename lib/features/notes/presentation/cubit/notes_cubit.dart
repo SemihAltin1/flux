@@ -1,20 +1,22 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flux/core/resources/data_state.dart';
 import 'package:flux/features/notes/data/models/get_notes_request.dart';
+import 'package:flux/features/notes/data/services/sync_manager.dart';
 import 'package:flux/features/notes/domain/use_cases/delete_notes_from_local.dart';
 import 'package:flux/features/notes/domain/use_cases/get_notes_from_local.dart';
-import 'package:flux/features/notes/domain/use_cases/get_notes_from_remote.dart';
 import 'package:flux/features/notes/domain/use_cases/save_notes_to_local.dart';
+import 'package:flux/features/notes/domain/use_cases/save_notes_to_remote.dart';
 import 'package:flux/features/notes/domain/use_cases/update_notes_to_local.dart';
+import 'package:flux/features/notes/domain/use_cases/update_notes_to_remote.dart';
 import 'package:flux/service_locator.dart';
 import '../../data/models/note_model.dart';
 import 'notes_state.dart';
 
 
-final class NotesCubit extends Cubit<NotesState> {
+final class NotesCubit extends Cubit<NotesState> with SyncManagerDelegate {
   String _currentCategoryId = "0";
   String? _currentSearchQuery;
-
+  final SyncManager _syncManager = SyncManager();
   NotesCubit() : super(NotesInitial());
 
 
@@ -49,6 +51,8 @@ final class NotesCubit extends Cubit<NotesState> {
     final result = await serviceLocator<SaveNotesToLocalUseCase>().execute(params: [note]);
     if(result is DataSuccess) {
       await fetchNotesFromLocal();
+      final connection = await _syncManager.checkCurrentConnection();
+      if(connection) await serviceLocator<SaveNotesToRemoteUseCase>().execute(params: [note]);
     } else if(result is DataFailed) {
       emit(NotesError(result.errorMessage ?? "The operation couldn't be completed."));
     }
@@ -67,29 +71,31 @@ final class NotesCubit extends Cubit<NotesState> {
     final result = await serviceLocator<UpdateNotesToLocalUseCase>().execute(params: [note]);
     if(result is DataSuccess) {
       await fetchNotesFromLocal();
+      final connection = await _syncManager.checkCurrentConnection();
+      if(connection) await serviceLocator<UpdateNotesToRemoteUseCase>().execute(params: [note.copyWith(id: note.remoteId)]);
     } else if(result is DataFailed) {
       emit(NotesError(result.errorMessage ?? "The operation couldn't be completed."));
     }
   }
 
-  Future<void> getNotesFromRemote() async {
-    emit(NotesLoading());
-    final result = await serviceLocator<GetNotesFromRemoteUseCase>().execute();
-    if(result is DataSuccess) {
-      final noteList = result.data ?? [];
-      final newNoteList = noteList.map<NoteModel>((e) => e.copyWith(id: null, remoteId: e.id, isSynced: 0)).toList();
-
-      final saveResult = await serviceLocator<SaveNotesToLocalUseCase>().execute(params: newNoteList);
-      if(saveResult is DataSuccess) {
-        fetchNotesFromLocal();
-      } else if(saveResult is DataFailed) {
-        emit(NotesError(result.errorMessage ?? "Notes couldn't be loaded."));
-      }
-
-    } else if(result is DataFailed) {
-      emit(NotesError(result.errorMessage ?? "Notes couldn't be loaded."));
+  Future<void> syncNotes() async {
+    _syncManager.delegate = this;
+    final isConnected = await _syncManager.checkCurrentConnection();
+    if(isConnected) {
+      await _syncManager.performSync();
+    } else {
+      fetchNotesFromLocal();
     }
+
+    _syncManager.listenConnection();
   }
 
+
+  @override
+  void notify(bool isSynced) {
+    if(isSynced) {
+      fetchNotesFromLocal();
+    }
+  }
 
 }

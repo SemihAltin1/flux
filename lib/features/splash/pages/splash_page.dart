@@ -67,7 +67,7 @@ final class _SplashPageState extends State<SplashPage> with SplashDelegate {
       context,
       MaterialPageRoute(
         builder: (context) => BlocProvider(
-          create: (context) => NotesCubit()..fetchNotesFromLocal(),
+          create: (context) => NotesCubit()..syncNotes(),
           child: const NotesPage(),
         ),
       ),

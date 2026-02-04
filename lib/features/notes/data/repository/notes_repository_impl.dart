@@ -99,7 +99,7 @@ final class NotesRepositoryImpl extends NotesRepository {
   @override
   Future<DataState<bool>> updateNotesToRemote(List<NoteModel> notes) async {
     try {
-      await _remoteService.saveNotes(notes);
+      await _remoteService.updateNotes(notes);
       return const DataSuccess(true);
     } on DioException catch(e) {
       final message = e.response?.data["message"] ?? "The operation couldn't be completed";

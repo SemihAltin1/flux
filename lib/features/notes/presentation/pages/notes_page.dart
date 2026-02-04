@@ -310,7 +310,7 @@ final class NotesPage extends StatelessWidget {
                 ),
                 title: Text(note.isPinned == 1 ? "Unpin Note" : "Pin Note"),
                 onTap: () {
-                  final updatedNote = note.copyWith(isPinned: note.isPinned == 1 ? 0 : 1);
+                  final updatedNote = note.copyWith(isPinned: note.isPinned == 1 ? 0 : 1, isSynced: 2);
                   context.read<NotesCubit>().updateNoteToLocal(updatedNote);
                   Navigator.pop(bottomSheetContext);
                 },
@@ -383,7 +383,7 @@ final class NotesPage extends StatelessWidget {
                   ),
                   trailing: isSelected ? const Icon(Icons.check, color: AppColors.primary) : null,
                   onTap: () {
-                    final updatedNote = note.copyWith(categoryId: category.id);
+                    final updatedNote = note.copyWith(categoryId: category.id, isSynced: 2);
                     context.read<NotesCubit>().updateNoteToLocal(updatedNote);
                     Navigator.pop(dialogContext);
                   },

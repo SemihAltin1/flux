@@ -186,7 +186,7 @@ final class LoginPage extends StatelessWidget {
       context,
       MaterialPageRoute(
         builder: (context) => BlocProvider(
-          create: (context) => NotesCubit()..getNotesFromRemote(),
+          create: (context) => NotesCubit()..syncNotes(),
           child: const NotesPage(),
         ),
       ),
