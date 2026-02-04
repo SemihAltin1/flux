@@ -319,12 +319,19 @@ final class _CreateNotePageState extends State<CreateNotePage> with WidgetsBindi
             ListTile(
               leading: const Icon(Icons.summarize_outlined),
               title: const Text("Summarize with AI"),
-              onTap: () => _handleAIAction("Summarize this note in 3 bullet points"),
+              onTap: () => _handleAIAction(
+                  "Summarize the following note into exactly 3 clear bullet points. "
+                      "Use a bold header named 'SUMMARY:'. "
+                      "Add a blank line between each bullet point."
+              ),
             ),
             ListTile(
               leading: const Icon(Icons.auto_fix_high),
               title: const Text("Fix Grammar & Style"),
-              onTap: () => _handleAIAction("Fix the grammar and make this note sound more professional"),
+              onTap: () => _handleAIAction(
+                  "Rewrite the following text to fix grammar and professional style. "
+                      "Maintain the original meaning and return ONLY the corrected text itself."
+              ),
             ),
           ],
         ),
@@ -335,6 +342,10 @@ final class _CreateNotePageState extends State<CreateNotePage> with WidgetsBindi
   Future<void> _handleAIAction(String prompt) async {
     Navigator.pop(context);
     final currentContent = _controller.document.toPlainText();
+    if (currentContent.trim().isEmpty) {
+      CustomDialogs.showErrorDialog(context, "AI Action", "Please write something first!");
+      return;
+    }
     context.read<AICubit>().processContent(prompt, currentContent);
   }
   //endregion
