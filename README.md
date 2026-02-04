@@ -39,6 +39,4 @@ A high-performance, offline-first note-taking application built with Flutter and
 - Run the app: flutter run
 
 ## 📺 Demo & APK
-- Performance Demo: https://semihaltin.com
-
-- Download APK: https://semihaltin.com
+- Performance Demo & APK: https://drive.google.com/drive/folders/1tDQ_48_8SstpvPMvhmhQO4v0v4K005kG?usp=sharing
