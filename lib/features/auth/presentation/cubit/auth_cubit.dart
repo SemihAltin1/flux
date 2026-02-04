@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flux/core/helpers/dio_helper.dart';
 import 'package:flux/features/auth/data/models/login_request.dart';
@@ -14,6 +15,12 @@ final class AuthCubit extends Cubit<AuthState> {
 
   Future<void> signIn(LoginRequest request) async {
     emit(AuthLoading());
+
+    final isConnected = await _checkInternetConnection();
+    if(isConnected == false) {
+      emit(AuthError("Please check your internet connection before sign up."));
+      return;
+    }
 
     final result = await serviceLocator<LoginUseCase>().execute(params: request);
 
@@ -32,6 +39,11 @@ final class AuthCubit extends Cubit<AuthState> {
 
   Future<void> signUp(RegisterRequest request) async {
     emit(AuthLoading());
+    final isConnected = await _checkInternetConnection();
+    if(isConnected == false) {
+      emit(AuthError("Please check your internet connection before sign up."));
+      return;
+    }
 
     final result = await serviceLocator<RegisterUseCase>().execute(params: request);
 
@@ -59,6 +71,15 @@ final class AuthCubit extends Cubit<AuthState> {
       emit(AuthError(result.errorMessage ?? "Link couldn't be sent"));
     }
 
+  }
+
+  Future<bool> _checkInternetConnection() async {
+    final Connectivity connectivity = Connectivity();
+    final List<ConnectivityResult> results = await connectivity.checkConnectivity();
+    if (results.any((result) => result != ConnectivityResult.none)) {
+      return true;
+    }
+    return false;
   }
 
 }

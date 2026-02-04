@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../data/services/ai_service.dart';
@@ -14,6 +15,12 @@ final class AICubit extends Cubit<AIState> {
       return;
     }
 
+    final connection = await _checkInternetConnection();
+    if(connection == false) {
+      emit(AIError("Please check your internet connection before using AI"));
+      return;
+    }
+
     emit(AILoading());
 
     try {
@@ -26,6 +33,15 @@ final class AICubit extends Cubit<AIState> {
     } catch (e) {
       emit(AIError(e.toString()));
     }
+  }
+
+  Future<bool> _checkInternetConnection() async {
+    final Connectivity connectivity = Connectivity();
+    final List<ConnectivityResult> results = await connectivity.checkConnectivity();
+    if (results.any((result) => result != ConnectivityResult.none)) {
+      return true;
+    }
+    return false;
   }
 
 }

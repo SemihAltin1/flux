@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flux/core/resources/data_state.dart';
 import 'package:flux/features/auth/domain/use_cases/get_current_user.dart';
@@ -17,6 +18,12 @@ final class SettingsCubit extends Cubit<SettingsState> {
   Future<void> updateProfile(UpdateProfileRequest request) async {
     emit(SettingsLoading());
 
+    final connection = await _checkInternetConnection();
+    if(connection == false) {
+      emit(SettingsError("Please check your internet connection"));
+      return;
+    }
+
     final result = await serviceLocator<UpdateProfileUseCase>().execute(params: request);
     if(result is DataSuccess) {
       final user = result.data;
@@ -33,6 +40,12 @@ final class SettingsCubit extends Cubit<SettingsState> {
 
   Future<void> updatePassword(UpdatePasswordRequest request) async {
     emit(SettingsLoading());
+
+    final connection = await _checkInternetConnection();
+    if(connection == false) {
+      emit(SettingsError("Please check your internet connection"));
+      return;
+    }
 
     final result = await serviceLocator<UpdatePasswordUseCase>().execute(params: request);
     if(result is DataSuccess) {
@@ -78,6 +91,15 @@ final class SettingsCubit extends Cubit<SettingsState> {
       await serviceLocator<DeleteAllNotesFromLocalUseCase>().execute();
       emit(SignedOut());
     }
+  }
+
+  Future<bool> _checkInternetConnection() async {
+    final Connectivity connectivity = Connectivity();
+    final List<ConnectivityResult> results = await connectivity.checkConnectivity();
+    if (results.any((result) => result != ConnectivityResult.none)) {
+      return true;
+    }
+    return false;
   }
 
 }

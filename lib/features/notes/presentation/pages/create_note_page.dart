@@ -2,11 +2,13 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_quill/flutter_quill.dart';
+import 'package:flux/common/widgets/custom_dialogs.dart';
 import 'package:flux/common/widgets/default_app_bar.dart';
 import 'package:flux/config/assets/app_icons.dart';
 import 'package:flux/config/theme/app_colors.dart';
 import 'package:flux/features/notes/presentation/cubit/ai_cubit.dart';
 import 'package:flux/features/notes/presentation/cubit/ai_state.dart';
+import 'package:lottie/lottie.dart';
 import '../../data/models/category_model.dart';
 import '../../data/models/note_model.dart';
 import '../cubit/notes_cubit.dart';
@@ -53,9 +55,7 @@ final class _CreateNotePageState extends State<CreateNotePage> {
                 _controller.document.length - 1,
                 "\n\n--- AI Suggestion ---\n${state.result}");
           } else if (state is AIError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
+            CustomDialogs.showErrorDialog(context, "New Note", state.message);
           }
         },
         child: BlocBuilder<AICubit, AIState>(
@@ -77,22 +77,8 @@ final class _CreateNotePageState extends State<CreateNotePage> {
                   ),
                 ),
 
-
                 if (isLoading)
-                  Container(
-                    color: Colors.black.withValues(alpha: 0.4),
-                    alignment: .center,
-                    child: Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: .circular(20),
-                      ),
-                      alignment: .center,
-                      child: const CircularProgressIndicator(color: AppColors.primary),
-                    ),
-                  ),
+                  _loadingAnimation(),
               ],
             );
           },
@@ -163,6 +149,39 @@ final class _CreateNotePageState extends State<CreateNotePage> {
         child: ImageIcon(
           AssetImage(AppIcons.ai),
           color: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  Widget _loadingAnimation() {
+    return Container(
+      color: Colors.black.withValues(alpha: 0.4),
+      alignment: .center,
+      child: Container(
+        width: 200,
+        height: 180,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: .circular(20),
+        ),
+        alignment: .center,
+        child: Column(
+          mainAxisAlignment: .center,
+          spacing: 5,
+          children: [
+            Lottie.asset(
+              "assets/animation/clock_animation.json",
+              width: 90,
+              height: 90,
+            ),
+            const Material(
+              child: Text(
+                "Generating with AI",
+                textAlign: .center,
+              ),
+            ),
+          ],
         ),
       ),
     );
