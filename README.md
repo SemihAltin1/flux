@@ -1,6 +1,6 @@
 # FLUX - AI Note-Taking App
 
-A high-performance, offline-first note-taking application built with Flutter and a custom FastAPI backend. This project demonstrates Clean Architecture principles and robust state management using Bloc/Cubit.
+A high-performance, offline-first note-taking application built with Flutter and a custom Laravel (PHP) backend. This project demonstrates Clean Architecture principles and robust state management using Bloc/Cubit.
 
 ## ✨ Key Features
 - Offline-First & Sync: Seamlessly create and edit notes offline; data automatically syncs with the custom backend when a connection is restored.
