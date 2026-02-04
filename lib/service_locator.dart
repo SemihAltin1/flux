@@ -21,6 +21,7 @@ import 'package:flux/features/notes/domain/use_cases/get_deleted_notes.dart';
 import 'package:flux/features/notes/domain/use_cases/get_notes_from_remote.dart';
 import 'package:flux/features/notes/domain/use_cases/get_unsynced_notes.dart';
 import 'package:flux/features/notes/domain/use_cases/hard_delete_notes_from_local.dart';
+import 'package:flux/features/notes/domain/use_cases/restore_note.dart';
 import 'package:flux/features/notes/domain/use_cases/save_notes_to_local.dart';
 import 'package:flux/features/notes/domain/use_cases/save_notes_to_remote.dart';
 import 'package:flux/features/notes/domain/use_cases/update_notes_to_local.dart';
@@ -71,6 +72,7 @@ Future<void> initializeDependencies() async {
   serviceLocator.registerSingleton<GetDeletedNotesUseCase>(GetDeletedNotesUseCase());
   serviceLocator.registerSingleton<GetUnsyncedNotesUseCase>(GetUnsyncedNotesUseCase());
   serviceLocator.registerSingleton<HardDeleteNotesFromLocalUseCase>(HardDeleteNotesFromLocalUseCase());
+  serviceLocator.registerSingleton<RestoreNoteUseCase>(RestoreNoteUseCase());
 
   serviceLocator.registerSingleton<DeleteNotesFromRemoteUseCase>(DeleteNotesFromRemoteUseCase());
   serviceLocator.registerSingleton<GetNotesFromRemoteUseCase>(GetNotesFromRemoteUseCase());

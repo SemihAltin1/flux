@@ -20,4 +20,6 @@ abstract class NotesLocalService {
 
   Future<DataState<bool>> hardDeleteNotes(List<int> ids);
 
+  Future<DataState<bool>> restoreNote(NoteModel note);
+
 }

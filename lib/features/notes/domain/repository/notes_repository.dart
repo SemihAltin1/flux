@@ -12,6 +12,7 @@ abstract class NotesRepository {
   Future<DataState<List<NoteModel>>> getUnsyncedNotes();
   Future<DataState<List<NoteModel>>> getDeletedNotes();
   Future<DataState<bool>> hardDeleteNotesFromLocal(List<int> ids);
+  Future<DataState<bool>> restoreNote(NoteModel note);
 
   // REMOTE
   Future<DataState<List<NoteModel>>> saveNotesToRemote(List<NoteModel> notes);

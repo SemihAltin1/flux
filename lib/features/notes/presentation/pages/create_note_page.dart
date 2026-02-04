@@ -21,7 +21,7 @@ final class CreateNotePage extends StatefulWidget {
   State<CreateNotePage> createState() => _CreateNotePageState();
 }
 
-final class _CreateNotePageState extends State<CreateNotePage> {
+final class _CreateNotePageState extends State<CreateNotePage> with WidgetsBindingObserver {
   late final QuillController _controller;
   late String _selectedCategoryId;
   late int _isPinned;
@@ -29,6 +29,7 @@ final class _CreateNotePageState extends State<CreateNotePage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _initializeController();
     _selectedCategoryId = widget.noteModel?.categoryId ?? "0";
     _isPinned = widget.noteModel?.isPinned ?? 0;
@@ -36,8 +37,16 @@ final class _CreateNotePageState extends State<CreateNotePage> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _controller.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.inactive || state == AppLifecycleState.paused) {
+      _saveNote();
+    }
   }
 
   @override
@@ -231,7 +240,7 @@ final class _CreateNotePageState extends State<CreateNotePage> {
                   title: const Text("Delete", style: TextStyle(color: Colors.red)),
                   onTap: () {
                     Navigator.pop(bottomSheetContext);
-                    if(widget.noteModel?.id != null) context.read<NotesCubit>().deleteNoteToLocal(widget.noteModel!.id!);
+                    if(widget.noteModel?.id != null) context.read<NotesCubit>().deleteNoteToLocal(widget.noteModel!);
                     Navigator.pop(context);
                   },
                 ),

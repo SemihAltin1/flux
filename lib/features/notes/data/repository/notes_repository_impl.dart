@@ -52,6 +52,11 @@ final class NotesRepositoryImpl extends NotesRepository {
     return _localService.hardDeleteNotes(ids);
   }
 
+  @override
+  Future<DataState<bool>> restoreNote(NoteModel note) {
+    return _localService.restoreNote(note);
+  }
+
 
   // REMOTE OPERATIONS
   @override

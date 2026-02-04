@@ -12,6 +12,11 @@ final class NotesLoaded extends NotesState {
   NotesLoaded(this.notes, {this.selectedCategoryId = "0"});
 }
 
+final class NoteDeleted extends NotesState {
+  NoteModel note;
+  NoteDeleted(this.note);
+}
+
 final class NotesError extends NotesState {
   final String message;
   NotesError(this.message);

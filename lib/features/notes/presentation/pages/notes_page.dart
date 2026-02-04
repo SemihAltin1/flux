@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:flux/common/widgets/custom_dialogs.dart';
 import 'package:flux/features/notes/presentation/pages/create_note_page.dart';
 import 'package:flux/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:intl/intl.dart';
@@ -25,9 +26,10 @@ final class NotesPage extends StatelessWidget {
       body: BlocListener<NotesCubit, NotesState>(
         listener: (context, state) {
           if (state is NotesError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
+            CustomDialogs.showErrorDialog(context, "Notes", state.message);
+          }
+          if(state is NoteDeleted) {
+            _showUndoSnackBar(context, state.note);
           }
         },
         child: ListView(
@@ -335,7 +337,7 @@ final class NotesPage extends StatelessWidget {
                 leading: const Icon(Icons.delete_outline, color: Colors.red),
                 title: const Text("Delete", style: TextStyle(color: Colors.red)),
                 onTap: () {
-                  context.read<NotesCubit>().deleteNoteToLocal(note.id!);
+                  context.read<NotesCubit>().deleteNoteToLocal(note);
                   Navigator.pop(bottomSheetContext);
                 },
               ),
@@ -412,6 +414,22 @@ final class NotesPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _showUndoSnackBar(BuildContext context, NoteModel note) {
+    final snackBar = SnackBar(
+      content: const Text("Note moved to trash"),
+      duration: const Duration(seconds: 4),
+      action: SnackBarAction(
+        label: "Undo",
+        textColor: AppColors.primary,
+        onPressed: () {
+          context.read<NotesCubit>().restoreNote(note);
+        },
+      ),
+    );
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
   //endregion
 

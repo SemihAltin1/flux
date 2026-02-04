@@ -146,4 +146,25 @@ final class NotesLocalServiceImpl implements NotesLocalService {
       return const DataFailed("Could not permanently remove notes from local storage.");
     }
   }
+
+  @override
+  Future<DataState<bool>> restoreNote(NoteModel note) async {
+    try {
+      final db = await _dbService.database;
+
+      await db.update(
+        'notes',
+        {
+          'is_deleted_locally': 0,
+          'is_synced': 2,
+        },
+        where: 'id = ?',
+        whereArgs: [note.id],
+      );
+
+      return const DataSuccess(true);
+    } catch (e) {
+      return const DataFailed("Note could not be restored.");
+    }
+  }
 }

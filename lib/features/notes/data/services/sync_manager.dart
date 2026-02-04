@@ -95,6 +95,7 @@ final class SyncManager {
       await serviceLocator<SaveNotesToLocalUseCase>().execute(params: newNoteList);
     }
   }
+
 }
 
 mixin SyncManagerDelegate {

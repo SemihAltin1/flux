@@ -4,6 +4,7 @@ import 'package:flux/features/notes/data/models/get_notes_request.dart';
 import 'package:flux/features/notes/data/services/sync_manager.dart';
 import 'package:flux/features/notes/domain/use_cases/delete_notes_from_local.dart';
 import 'package:flux/features/notes/domain/use_cases/get_notes_from_local.dart';
+import 'package:flux/features/notes/domain/use_cases/restore_note.dart';
 import 'package:flux/features/notes/domain/use_cases/save_notes_to_local.dart';
 import 'package:flux/features/notes/domain/use_cases/save_notes_to_remote.dart';
 import 'package:flux/features/notes/domain/use_cases/update_notes_to_local.dart';
@@ -48,19 +49,26 @@ final class NotesCubit extends Cubit<NotesState> with SyncManagerDelegate {
   }
 
   Future<void> addNoteToLocal(NoteModel note) async {
-    final result = await serviceLocator<SaveNotesToLocalUseCase>().execute(params: [note]);
-    if(result is DataSuccess) {
-      await fetchNotesFromLocal();
-      final connection = await _syncManager.checkCurrentConnection();
-      if(connection) await serviceLocator<SaveNotesToRemoteUseCase>().execute(params: [note]);
-    } else if(result is DataFailed) {
-      emit(NotesError(result.errorMessage ?? "The operation couldn't be completed."));
+    final connection = await _syncManager.checkCurrentConnection();
+    if(connection) {
+      final result = await serviceLocator<SaveNotesToRemoteUseCase>().execute(params: [note]);
+      if(result is DataSuccess) {
+        final savedNotes = result.data ?? [];
+        await serviceLocator<SaveNotesToLocalUseCase>().execute(params: savedNotes);
+        await fetchNotesFromLocal();
+      }
+    } else {
+      final result = await serviceLocator<SaveNotesToLocalUseCase>().execute(params: [note]);
+      if(result is DataSuccess) {
+        await fetchNotesFromLocal();
+      }
     }
   }
 
-  Future<void> deleteNoteToLocal(int id) async {
-    final result = await serviceLocator<DeleteNotesFromLocalUseCase>().execute(params: [id]);
+  Future<void> deleteNoteToLocal(NoteModel note) async {
+    final result = await serviceLocator<DeleteNotesFromLocalUseCase>().execute(params: [note.id ?? 0]);
     if(result is DataSuccess) {
+      emit(NoteDeleted(note));
       await fetchNotesFromLocal();
     } else if(result is DataFailed) {
       emit(NotesError(result.errorMessage ?? "The operation couldn't be completed."));
@@ -73,6 +81,15 @@ final class NotesCubit extends Cubit<NotesState> with SyncManagerDelegate {
       await fetchNotesFromLocal();
       final connection = await _syncManager.checkCurrentConnection();
       if(connection) await serviceLocator<UpdateNotesToRemoteUseCase>().execute(params: [note.copyWith(id: note.remoteId)]);
+    } else if(result is DataFailed) {
+      emit(NotesError(result.errorMessage ?? "The operation couldn't be completed."));
+    }
+  }
+
+  Future<void> restoreNote(NoteModel note) async {
+    final result = await serviceLocator<RestoreNoteUseCase>().execute(params: note);
+    if(result is DataSuccess) {
+      await fetchNotesFromLocal();
     } else if(result is DataFailed) {
       emit(NotesError(result.errorMessage ?? "The operation couldn't be completed."));
     }
