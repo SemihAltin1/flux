@@ -5,7 +5,6 @@ import 'package:flux/features/notes/data/services/notes_local_service.dart';
 import 'package:flux/features/notes/data/services/notes_remote_service.dart';
 import 'package:flux/features/notes/domain/repository/notes_repository.dart';
 import 'package:flux/service_locator.dart';
-
 import '../models/get_notes_request.dart';
 
 final class NotesRepositoryImpl extends NotesRepository {

@@ -65,11 +65,6 @@ final class SyncManager {
 
     final noteIds = deletedNotes.map((e) => e.remoteId ?? 0).toList();
     await serviceLocator<DeleteNotesFromRemoteUseCase>().execute(params: noteIds);
-    // final deleteRes = await serviceLocator<DeleteNotesFromRemoteUseCase>().execute(params: noteIds);
-    //
-    // if (deleteRes is DataSuccess) {
-    //   await serviceLocator<HardDeleteNotesFromLocalUseCase>().execute(params: noteIds);
-    // }
   }
 
   Future<void> syncCreatedNotes() async {
@@ -79,18 +74,6 @@ final class SyncManager {
 
     final createdNotes = unSyncedNotes.where((note) => note.isSynced == 1).toList();
     await serviceLocator<SaveNotesToRemoteUseCase>().execute(params: createdNotes);
-    // final createRes = await serviceLocator<SaveNotesToRemoteUseCase>().execute(params: createdNotes);
-    //
-    // if(createRes is DataSuccess) {
-    //   final savedNotes = createRes.data ?? [];
-    //   final newNoteList = savedNotes.map<NoteModel>((e) => e.copyWith(remoteId: e.id, isSynced: 0)).toList();
-    //
-    //   final insertRes = await serviceLocator<SaveNotesToLocalUseCase>().execute(params: newNoteList);
-    //   if(insertRes is DataSuccess) {
-    //     final idList = createdNotes.map<int>((e) => e.id ?? 0).toList();
-    //     await serviceLocator<HardDeleteNotesFromLocalUseCase>().execute(params: idList);
-    //   }
-    // }
   }
 
   Future<void> syncUpdatedNotes() async {
@@ -101,12 +84,6 @@ final class SyncManager {
     final updatedNotes = unSyncedNotes.where((note) => note.isSynced == 2).toList();
     final noteList = updatedNotes.map<NoteModel>((e) => e.copyWith(id: e.remoteId)).toList();
     await serviceLocator<UpdateNotesToRemoteUseCase>().execute(params: noteList);
-    // final syncRes = await serviceLocator<UpdateNotesToRemoteUseCase>().execute(params: noteList);
-    //
-    // if (syncRes is DataSuccess) {
-    //   final newNoteList = updatedNotes.map<NoteModel>((e) => e.copyWith(isSynced: 0)).toList();
-    //   await serviceLocator<UpdateNotesToLocalUseCase>().execute(params: newNoteList);
-    // }
   }
 
   Future<void> getNotesFromRemote() async {

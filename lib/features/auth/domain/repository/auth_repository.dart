@@ -1,6 +1,5 @@
 import 'package:flux/core/resources/data_state.dart';
 import 'package:flux/features/auth/data/models/user_model.dart';
-
 import '../../data/models/login_request.dart';
 import '../../data/models/register_request.dart';
 
